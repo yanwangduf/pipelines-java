@@ -7,7 +7,9 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: Default  # Uses the default self-hosted agent pool
+  demands:
+    - agent.name -equals azure 
 
 steps:
 - task: Maven@3

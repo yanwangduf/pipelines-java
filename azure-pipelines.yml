@@ -16,13 +16,56 @@ steps:
 - script: echo "Hello World from Azure DevOps!" 
   displayName: 'Print Hello World'  
 
-# - task: Maven@3
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+
+# # Checkout source code
+# - checkout: self
+
+# # Install Docker CLI
+# - task: DockerInstaller@0
+#   displayName: 'Install Docker'
+
+# # Login to Azure Container Registry
+# - task: Docker@2
+#   displayName: 'Login to ACR'
 #   inputs:
-#     mavenPomFile: 'pom.xml'
-#     mavenOptions: '-Xmx3072m'
-#     javaHomeOption: 'JDKVersion'
-#     jdkVersionOption: '1.11'
-#     jdkArchitectureOption: 'x64'
-#     publishJUnitResults: true
-#     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-#     goals: 'package'
+#     command: login
+#     containerRegistry: 'ACRServiceConnection' # Name of your Azure service connection for ACR
+
+# # Build Docker image
+# - task: Docker@2
+#   displayName: 'Build Docker Image'
+#   inputs:
+#     command: build
+#     repository: $(imageRepository)
+#     dockerfile: $(dockerfilePath)
+#     containerRegistry: $(azureContainerRegistry)
+#     tags: |
+#       $(tag)
+#       latest
+
+# # Push Docker image to ACR
+# - task: Docker@2
+#   displayName: 'Push Docker Image'
+#   inputs:
+#     command: push
+#     repository: $(imageRepository)
+#     containerRegistry: $(azureContainerRegistry)
+#     tags: |
+#       $(tag)
+#       latest
+
+# # Optional: Output the pushed image information
+# - script: |
+#     echo "Successfully pushed image to: $(azureContainerRegistry)/$(imageRepository):$(tag)"
+#     echo "Image also tagged as: $(azureContainerRegistry)/$(imageRepository):latest"
+#   displayName: 'Output Image Info'
